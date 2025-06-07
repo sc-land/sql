@@ -1,0 +1,100 @@
+////////////////////////
+// TOKENS BÁSICOS
+////////////////////////
+
+WHITESPACE = _{ " " | "\t" | NEWLINE }
+comment = {
+    line_comment | block_comment
+}
+line_comment = @{ "--" ~ (!NEWLINE ~ ANY)* }
+block_comment = @{ "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
+ident = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
+string = @{ "'" ~ (!"'" ~ ANY)* ~ "'" }
+number = @{ ASCII_DIGIT+ }
+
+////////////////////////
+// TIPOS SQL SIMPLES
+////////////////////////
+
+fauna = {
+    "INT" | "TEXT" | "BOOLEAN"
+}
+
+////////////////////////
+// DDL: CREATE TABLE
+////////////////////////
+
+seed = {
+    "CREATE" ~ "TABLE" ~ ident ~ "(" ~ stem ~ ("," ~ stem)* ~ ")"
+}
+
+stem = {
+    ident ~ fauna ~ anchor*
+}
+
+anchor = {
+    "NOT NULL" |
+    "PRIMARY KEY" |
+    "UNIQUE"
+}
+
+////////////////////////
+// DML: INSERT INTO
+////////////////////////
+
+sow = {
+    "INSERT" ~ "INTO" ~ ident ~ "(" ~ ident ~ ("," ~ ident)* ~ ")" ~
+    "VALUES" ~ "(" ~ nutrient ~ ("," ~ nutrient)* ~ ")"
+}
+
+nutrient = { number | string | boolean }
+
+boolean = { "TRUE" | "FALSE" }
+
+////////////////////////
+// DQL: SELECT
+////////////////////////
+
+sample = {
+    "SELECT" ~ twigs ~ "FROM" ~ ident ~ gate?
+}
+
+twigs = { "*" | ident ~ ("," ~ ident)* }
+
+gate = {
+    "WHERE" ~ sift
+}
+
+sift = { or_sift }
+
+or_sift = { and_sift ~ (OR ~ and_sift)* }
+and_sift = { comparison_sift ~ (AND ~ comparison_sift)* }
+comparison_sift = {
+    primary_sift ~ (comp_op ~ primary_sift)?
+}
+primary_sift = {
+    ident | nutrient | paren_sift
+}
+paren_sift = { "(" ~ sift ~ ")" }
+comp_op = { "=" | "<>" | "!=" | "<=" | ">=" | "<" | ">" }
+
+AND = _{ ^"AND" }
+OR = _{ ^"OR" }
+
+////////////////////////
+// ROOT RULE
+////////////////////////
+
+sql = {
+    sql_item*
+}
+
+sql_item = _{ comment | sql_statement_with_semicolon }
+
+sql_statement_with_semicolon = _{ sql_statement ~ ";"? }
+
+sql_statement = _{ DDL | DML | DQL }
+
+DDL = { seed }
+DML = { sow }
+DQL = { sample }

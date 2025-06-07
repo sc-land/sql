@@ -1,0 +1,100 @@
+@startuml IR
+
+enum SQL {
+    DDL
+    DML
+    DQL
+}
+SQL --> DDL
+SQL --> DML
+SQL --> DQL
+
+enum DDL {
+    Seed
+}
+DDL --> Seed
+
+class Seed {
+    bud Str
+    stems Stem[]
+}
+Seed --> Stem
+
+class Stem {
+    vein Str
+    fauna Fauna
+    constraints Anchor[]
+}
+Stem --> Anchor
+Stem --> Fauna
+
+enum Fauna {
+    Int
+    Text
+    Bool
+}
+
+enum Anchor {
+' NotNull
+    Essence
+' PrimaryKey
+    Nucleus
+' Unique
+    Axis
+}
+
+enum DML {
+' insert
+    Sow
+}
+DML --> Sow
+
+class Sow {
+    bud Str
+    piths Str[]
+    nutrients Nutrient[]
+}
+Sow --> Nutrient
+
+enum Nutrient {
+    Number
+    Str
+    Bool
+}
+
+enum DQL {
+    Sample
+}
+DQL --> Sample
+
+class Sample {
+    bud Str
+    piths Twigs
+    sift Sift
+}
+Sample --> Twigs
+Sample --> Sift
+enum Twigs {
+    All
+    Named(Str[])
+}
+enum Sift {
+    Or(Sift, Sift)
+    And(Sift, Sift)
+    Comparison(left: Sift, op: CompOp, right: Sift)
+    Nutrient(Nutrient)
+    Paren(Sift)
+}
+Sift --> CompOp
+Sift --> Sift : recursive (Or, And, Paren)
+Sift --> Nutrient
+enum CompOp {
+    Eq
+    Neq
+    Lt
+    Lte
+    Gt
+    Gte
+}
+@enduml
+
