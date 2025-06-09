@@ -13,38 +13,17 @@ pub enum Sql {
 }
 
 impl Sql {
-
-    /// Processa múltiplas instruções SQL de um arquivo
-    pub fn parse(pair: Pair<Rule>) -> Vec<Self> {
+    pub fn from_pair(pair: Pair<Rule>) -> Vec<Self> {
         assert_eq!(pair.as_rule(), Rule::sql);
 
-        let mut statements = Vec::new();
-
-        for inner_pair in pair.into_inner() {
-            match inner_pair.as_rule() {
-                Rule::DDL => {
-                    let ddl = DDL::from_pair(inner_pair);
-                    statements.push(Sql::DDL(ddl));
-                }
-                Rule::DML => {
-                    let dml = DML::from_pair(inner_pair);
-                    statements.push(Sql::DML(dml));
-                }
-                Rule::DQL => {
-                    let dql = DQL::from_pair(inner_pair);
-                    statements.push(Sql::DQL(dql));
-                }
-                Rule::comment => {
-                    let comment = Comment::from_pair(inner_pair);
-                    statements.push(Sql::Comment(comment));
-                }
-                _ => {
-                    // Pula regras que não são SQL statements
-                    continue;
-                }
-            }
-        }
-
-        statements
+        pair.into_inner()
+            .filter_map(|p| match p.as_rule() {
+                Rule::DDL => Some(Sql::DDL(DDL::from_pair(p))),
+                Rule::DML => Some(Sql::DML(DML::from_pair(p))),
+                Rule::DQL => Some(Sql::DQL(DQL::from_pair(p))),
+                Rule::comment => Some(Sql::Comment(Comment::from_pair(p))),
+                _ => None,
+            })
+            .collect()
     }
 }
