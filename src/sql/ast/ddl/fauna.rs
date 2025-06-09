@@ -1,5 +1,4 @@
 use pest::{iterators::Pair, Parser};
-use ir::Flora;
 use serde::{Deserialize, Serialize};
 use crate::sql::parser::parser::{Rule, SQLParser};
 
@@ -31,21 +30,10 @@ impl Fauna {
             .expect("No pair found");
         Fauna::from_pair(pair)
     }
-
-    pub fn from_flora(flora: Flora) -> Self {
-        match flora {
-            Flora::Int => Fauna::Int,
-            Flora::Str => Fauna::Text,
-            Flora::Bool => Fauna::Bool,
-            _ => panic!("Invalid flora type: {:#?}", flora),
-        }
-    }
 }
 
 #[cfg(test)]
 mod tests {
-    use ir::Flora;
-
     use crate::sql::ast::ddl::fauna::Fauna;
 
     #[test]
@@ -53,12 +41,5 @@ mod tests {
         assert_eq!(Fauna::from_input("INT".to_string()), Fauna::Int);
         assert_eq!(Fauna::from_input("TEXT".to_string()), Fauna::Text);
         assert_eq!(Fauna::from_input("BOOLEAN".to_string()), Fauna::Bool);
-    }
-
-    #[test]
-    fn test_from_flora() {
-        assert_eq!(Fauna::from_flora(Flora::Int), Fauna::Int);
-        assert_eq!(Fauna::from_flora(Flora::Str), Fauna::Text);
-        assert_eq!(Fauna::from_flora(Flora::Bool), Fauna::Bool);
     }
 }
