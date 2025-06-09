@@ -10,7 +10,7 @@ use crate::sql::parser::parser::Rule;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DQL {
-    Select(Sample),
+    Sample(Sample),
 }
 
 impl DQL {
@@ -21,7 +21,7 @@ impl DQL {
         match inner_pair.as_rule() {
             Rule::sample => {
                 let select = Sample::from_pair(inner_pair);
-                DQL::Select(select)
+                DQL::Sample(select)
             }
             _ => panic!("Unexpected rule: {:?}", inner_pair.as_rule()),
         }
