@@ -9,14 +9,14 @@ pub struct Tree {
 }
 
 impl Tree {
-    pub fn parse_input(input: String) -> Self {
+    pub fn parse(input: String) -> Self {
         let parsed = SQLParser::parse(Rule::sql, &input).unwrap();
         let pair = parsed.clone().next().unwrap();
 
-        let statements = Sql::parse(pair);
+        let sqls = Sql::from_pair(pair);
 
         Self {
-            sqls: statements,
+            sqls,
         }
     }
 }

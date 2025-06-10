@@ -53,7 +53,7 @@ mod tests {
 
     #[test]
     fn test_seed_complete(){
-        let sql = fs::read_to_string("eg/ddl/create.sql").unwrap();
+        let sql = fs::read_to_string("eg/ddl/product.sql").unwrap();
         let seed = Seed::from_input(sql);
 
         // Testa o nome da tabela (bud)
